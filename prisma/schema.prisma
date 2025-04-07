@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BakerBusiness {
+  @@map("baker_businesses")
+  
+  id                  String   @id @default(cuid())
+  businessName        String
+  ownerName           String
+  businessAddress     String
+  city                String
+  postalCode          String
+  country             String
+  phone               String
+  email               String   @unique
+  websiteOrSocialLinks String
+
+  shortDescription    String   @db.Text
+  uniqueSellingPoints String   @db.Text
+  breadSpecialties    BreadSpecialties[]
+  productOfferings    ProductOfferings[]
+  organicIngredients  Boolean
+  ingredientDetails   String?  // Optional field for specifying details about organic/local ingredients
+
+  mediaContent        MediaContent[]
+}
+
+enum BreadSpecialties {
+  BREAD
+  VIENNOISERIES
+  BRIOCHE
+  CAKES
+  SNACKING
+  COFFEE
+  HORECA
+}
+
+enum ProductOfferings {
+  ENJOY_ON_LOCATION
+  TAKE_AWAY
+  DELIVERY
+}
+
+model MediaContent {
+  id              String        @id @default(cuid())
+  type            String        // e.g., "image" or "video"
+  url             String
+  bakerBusinessId String        // Foreign key to BakerBusiness
+  bakerBusiness   BakerBusiness @relation(fields: [bakerBusinessId], references: [id]) // Relation to BakerBusiness
+}
